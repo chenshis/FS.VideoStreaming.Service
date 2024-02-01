@@ -15,6 +15,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.Infrastructure", "1.Infra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FS.VideoStreaming.Infrastructure.Config", "FS.VideoStreaming.Infrastructure.Config\FS.VideoStreaming.Infrastructure.Config.csproj", "{E6F282F1-F712-45B4-B896-222025728F65}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FS.VideoStreaming.Application", "FS.VideoStreaming.Application\FS.VideoStreaming.Application.csproj", "{05CFAC06-9A62-4416-AF5A-CFF985EDBF1C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.Application", "2.Application", "{88006849-91B8-499C-9F61-6D4CE6FFD70F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{C13AD213-AC44-494D-9352-FF7EB7A9CA25}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,12 +35,18 @@ Global
 		{E6F282F1-F712-45B4-B896-222025728F65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E6F282F1-F712-45B4-B896-222025728F65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E6F282F1-F712-45B4-B896-222025728F65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05CFAC06-9A62-4416-AF5A-CFF985EDBF1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05CFAC06-9A62-4416-AF5A-CFF985EDBF1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05CFAC06-9A62-4416-AF5A-CFF985EDBF1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05CFAC06-9A62-4416-AF5A-CFF985EDBF1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{C1B27816-C252-48E5-86F7-A00E80BCA6F0} = {C13AD213-AC44-494D-9352-FF7EB7A9CA25}
 		{E6F282F1-F712-45B4-B896-222025728F65} = {A0C2B327-72EA-4F91-8483-95B6FACED048}
+		{05CFAC06-9A62-4416-AF5A-CFF985EDBF1C} = {88006849-91B8-499C-9F61-6D4CE6FFD70F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {76BB2732-2DF1-45D2-990C-B708CA6D1EBF}

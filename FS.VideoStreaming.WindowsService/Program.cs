@@ -1,3 +1,5 @@
+using FS.VideoStreaming.Application.AppService;
+using FS.VideoStreaming.Application.IAppService;
 using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Host.UseNLog();
+
+// “¿¿µ◊¢»Î
+builder.Services.AddScoped<ITestAppService, TestAppService>();
 
 var app = builder.Build();
 

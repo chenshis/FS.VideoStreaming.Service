@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FS.VideoStreaming.Infrastructure.Config\FS.VideoStreaming.Infrastructure.Config.csproj" />
+    <ProjectReference Include="..\FS.VideoStreaming.Application\FS.VideoStreaming.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
