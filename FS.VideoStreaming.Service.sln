@@ -3,7 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FS.VideoStreaming.WindowsService", "FS.VideoStreaming.WindowsService\FS.VideoStreaming.WindowsService.csproj", "{C1B27816-C252-48E5-86F7-A00E80BCA6F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FS.VideoStreaming.WindowsService", "FS.VideoStreaming.WindowsService\FS.VideoStreaming.WindowsService.csproj", "{C1B27816-C252-48E5-86F7-A00E80BCA6F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0.solution-items", "0.solution-items", "{15081E9B-8A05-4996-AC91-7B9E1E02A2D2}"
+	ProjectSection(SolutionItems) = preProject
+		common.props = common.props
+		publish.bat = publish.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.Infrastructure", "1.Infrastructure", "{A0C2B327-72EA-4F91-8483-95B6FACED048}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FS.VideoStreaming.Infrastructure.Config", "FS.VideoStreaming.Infrastructure.Config\FS.VideoStreaming.Infrastructure.Config.csproj", "{E6F282F1-F712-45B4-B896-222025728F65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +25,16 @@ Global
 		{C1B27816-C252-48E5-86F7-A00E80BCA6F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1B27816-C252-48E5-86F7-A00E80BCA6F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1B27816-C252-48E5-86F7-A00E80BCA6F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6F282F1-F712-45B4-B896-222025728F65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6F282F1-F712-45B4-B896-222025728F65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6F282F1-F712-45B4-B896-222025728F65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6F282F1-F712-45B4-B896-222025728F65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E6F282F1-F712-45B4-B896-222025728F65} = {A0C2B327-72EA-4F91-8483-95B6FACED048}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {76BB2732-2DF1-45D2-990C-B708CA6D1EBF}

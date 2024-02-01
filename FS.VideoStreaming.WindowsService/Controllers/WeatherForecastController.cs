@@ -21,6 +21,8 @@ namespace FS.VideoStreaming.WindowsService.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            _logger.LogInformation("ÄãºÃ°¡");
+            _logger.LogError("²âÊÔ");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
