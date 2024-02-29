@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Host.UseNLog();
 
 // ÒÀÀµ×¢Èë
-builder.Services.AddScoped<ITestAppService, TestAppService>();
+builder.Services.AddScoped<ICameraConfigAppService, CameraConfigAppService>();
 
 var app = builder.Build();
 
