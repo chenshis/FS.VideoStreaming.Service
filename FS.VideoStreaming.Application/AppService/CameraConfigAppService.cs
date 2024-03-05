@@ -15,7 +15,7 @@ namespace FS.VideoStreaming.Application.AppService
     {
         private readonly ILogger _logger;
 
-        public CameraConfigAppService(ILogger logger)
+        public CameraConfigAppService(ILogger<CameraConfigAppService> logger)
         {
             _logger = logger;
         }
