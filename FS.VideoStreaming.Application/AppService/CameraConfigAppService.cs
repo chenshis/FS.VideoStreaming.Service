@@ -1,12 +1,12 @@
-﻿using FS.VideoStreaming.Application.IAppService;
+﻿using FS.VideoStreaming.Application.Dto;
+using FS.VideoStreaming.Application.IAppService;
 using FS.VideoStreaming.Infrastructure.Config;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace FS.VideoStreaming.Application.AppService
@@ -19,19 +19,19 @@ namespace FS.VideoStreaming.Application.AppService
         {
             _logger = logger;
         }
-
-        public bool Save(List<string> cameraAddresses)
+        public bool Save(CameraConfigDto cameraConfigDto)
         {
-            if (cameraAddresses == null || cameraAddresses.Count <= 0)
+            if (cameraConfigDto == null || cameraConfigDto.RtspAddresses?.Count <= 0)
             {
                 _logger.LogError("保存摄像头配置信息失败：地址不存在！");
                 return false;
             }
-            if (!IsValidRtspAddress(cameraAddresses))
+            if (!IsValidRtspAddress(cameraConfigDto.RtspAddresses.Select(t => t.Url).ToList()))
             {
                 _logger.LogError("存在不合法的rtsp地址！");
                 return false;
             }
+
             var cameraDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SystemConstant.CameraConfigPath);
             if (!Directory.Exists(cameraDir))
             {
@@ -44,7 +44,7 @@ namespace FS.VideoStreaming.Application.AppService
             }
             try
             {
-                var cameraJson = JsonConvert.SerializeObject(cameraAddresses);
+                var cameraJson = JsonConvert.SerializeObject(cameraConfigDto);
                 File.WriteAllText(cameraFilePath, cameraJson);
                 return true;
             }
@@ -55,6 +55,40 @@ namespace FS.VideoStreaming.Application.AppService
             return false;
         }
 
+        /// <summary>
+        /// 读写锁
+        /// </summary>
+        private static object Obj_Lock = new object();
+
+        public CameraConfigDto GetCameraConfigs()
+        {
+            var cameraDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SystemConstant.CameraConfigPath);
+            if (!Directory.Exists(cameraDir))
+            {
+                return new CameraConfigDto();
+            }
+            var cameraFilePath = Path.Combine(cameraDir, SystemConstant.CameraConfigFileName);
+            if (!File.Exists(cameraFilePath))
+            {
+                return new CameraConfigDto();
+            }
+            try
+            {
+                string cameraJson;
+                lock (Obj_Lock)
+                {
+                    cameraJson = File.ReadAllText(cameraFilePath);
+                }
+                var cameraConfig = JsonConvert.DeserializeObject<CameraConfigDto>(cameraJson);
+                return cameraConfig;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"读取摄像头配置异常：{ex.Message}");
+            }
+
+            return new CameraConfigDto();
+        }
 
 
         #region 私有方法
