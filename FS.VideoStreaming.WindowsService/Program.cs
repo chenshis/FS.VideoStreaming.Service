@@ -2,6 +2,7 @@ using FS.VideoStreaming.Application.AppService;
 using FS.VideoStreaming.Application.IAppService;
 using FS.VideoStreaming.Infrastructure.Config;
 using FS.VideoStreaming.WindowsService.BackgroundServices;
+using Microsoft.Extensions.Configuration;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using System.Reflection;
@@ -16,6 +17,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Host.UseNLog();
 builder.Host.UseWindowsService();
+
+builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+{
+    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+});
+
 // ¸ü¸Ä¶Ë¿ÚºÅ
 var configBuilder = new ConfigurationBuilder()
    .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))

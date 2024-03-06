@@ -15,10 +15,14 @@ namespace FS.VideoStreaming.WindowsService.BackgroundServices
         {
             _configuration = configuration;
             Schedule = "*/10 * * * * *";
-            BasePath = _configuration["FileM3U8path:Path"]?? "D:\\nginx-1.24.0\\html";
-            KillAllProcess();
-            InitVideoInfo(serviceProvider);
-            PullFlowStart();
+            BasePath = _configuration["FileM3U8path:Path"];
+
+            if (BasePath != null)
+            {
+                KillAllProcess();
+                InitVideoInfo(serviceProvider);
+                PullFlowStart();
+            }
         }
 
         protected override string Schedule { get; set; }
