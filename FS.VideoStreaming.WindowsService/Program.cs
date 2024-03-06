@@ -1,8 +1,10 @@
 using FS.VideoStreaming.Application.AppService;
 using FS.VideoStreaming.Application.IAppService;
+using FS.VideoStreaming.Infrastructure.Config;
 using FS.VideoStreaming.WindowsService.BackgroundServices;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +13,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(); 
+builder.Services.AddSwaggerGen();
 builder.Host.UseNLog();
+builder.Host.UseWindowsService();
+// 更改端口号
+var configBuilder = new ConfigurationBuilder()
+   .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+   .AddJsonFile(SystemConstant.HostFileName)
+   .Build();
+var port = configBuilder.GetSection(SystemConstant.HostPort).Value;
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // 依赖注入
 builder.Services.AddScoped<ICameraConfigAppService, CameraConfigAppService>();

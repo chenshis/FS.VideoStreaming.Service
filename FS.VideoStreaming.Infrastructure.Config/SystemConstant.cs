@@ -12,5 +12,14 @@ namespace FS.VideoStreaming.Infrastructure.Config
         public const string CameraConfigPath = "CameraConfigurations";
 
         public const string CameraConfigFileName = "Camera.json";
+
+        /// <summary>
+        ///     宿主地址列表
+        /// </summary>
+        public const string HostPort = "hostPort";
+        /// <summary>
+        ///     端口
+        /// </summary>
+        public const string HostFileName = "host.json";
     }
 }
