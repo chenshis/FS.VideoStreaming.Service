@@ -13,6 +13,7 @@ namespace FS.VideoStreaming.WindowsService.BackgroundServices
 
         public VideoStreamingBackgroundService(IServiceProvider serviceProvider, IConfiguration configuration) : base(serviceProvider)
         {
+            using var scope = serviceProvider.CreateScope();
             _configuration = configuration;
             Schedule = "*/10 * * * * *";
             BasePath = _configuration["FileM3U8path:Path"];
@@ -20,7 +21,7 @@ namespace FS.VideoStreaming.WindowsService.BackgroundServices
             if (BasePath != null)
             {
                 KillAllProcess();
-                InitVideoInfo(serviceProvider);
+                InitVideoInfo(scope.ServiceProvider);
                 PullFlowStart();
             }
         }
@@ -107,7 +108,7 @@ namespace FS.VideoStreaming.WindowsService.BackgroundServices
             try
             {
                 var startInfo = new ProcessStartInfo();
-                startInfo.FileName = "ffmpeg.exe";
+                startInfo.FileName = "lib\\ffmpeg.exe";
 
                 startInfo.Arguments = " -f rtsp -rtsp_transport tcp -i " + RtspPath + " -fflags flush_packets -max_delay 1 -an -flags -global_header -hls_time 10 -hls_list_size 10 -hls_flags 10 -vcodec copy -s 216x384 -b 1024k -y  ";
                 startInfo.Arguments += (BasePath + "\\" + M3u8FileName);
