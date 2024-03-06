@@ -1,6 +1,15 @@
 {
   "RtspAddresses": [
     {
+      "ProcessId": 11010,
+      "PlayUrl": "",
+      "Name": "Channel801",
+      "Url": "rtsp://testuser:Qaz@12345@218.3.116.155:554/Streaming/Channels/802",
+      "Description": "这是八号通道摄像头"
+    },
+    {
+      "ProcessId": 11011,
+      "PlayUrl": "",
       "Name": "Channel802",
       "Url": "rtsp://testuser:Qaz@12345@218.3.116.155:554/Streaming/Channels/802",
       "Description": "这是八号通道摄像头"

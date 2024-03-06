@@ -27,8 +27,10 @@ builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 // 依赖注入
 builder.Services.AddScoped<ICameraConfigAppService, CameraConfigAppService>();
 
+
 // 后台服务
 builder.Services.AddHostedService<VideoStreamingBackgroundService>();
+
 
 var app = builder.Build();
 

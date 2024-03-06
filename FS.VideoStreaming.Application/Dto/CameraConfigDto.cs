@@ -20,6 +20,14 @@ namespace FS.VideoStreaming.Application.Dto
     public class CameraConfigBaseDto
     {
         /// <summary>
+        /// 推流进程ID
+        /// </summary>
+        public int ProcessId { get; set; }
+        /// <summary>
+        /// 可播放地址
+        /// </summary>
+        public string PlayUrl { get; set; }
+        /// <summary>
         /// 名称
         /// </summary>
         public string Name { get; set; }
