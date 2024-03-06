@@ -18,11 +18,6 @@ builder.Services.AddSwaggerGen();
 builder.Host.UseNLog();
 builder.Host.UseWindowsService();
 
-builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
-{
-    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-});
-
 // ¸ü¸Ä¶Ë¿ÚºÅ
 var configBuilder = new ConfigurationBuilder()
    .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
