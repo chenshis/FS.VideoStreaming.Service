@@ -22,5 +22,12 @@ namespace FS.VideoStreaming.Application.IAppService
         /// </summary>
         /// <returns></returns>
         CameraConfigDto GetCameraConfigs();
+
+        /// <summary>
+        /// 验证摄像头地址是否合法
+        /// </summary>
+        /// <param name="addresses">地址校验</param>
+        /// <returns></returns>
+        bool IsValidRtspAddress(List<string> addresses);
     }
 }

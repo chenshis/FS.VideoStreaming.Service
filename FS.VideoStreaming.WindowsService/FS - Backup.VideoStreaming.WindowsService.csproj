@@ -34,16 +34,10 @@
     <None Update="lib\ffmpeg.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="windows-service\run-install.bat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="windows-service\run-uninstall.bat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(PublishDir)==$(OutDir)publish\ (&#xD;&#xA;xcopy /s /e /i /y $(SolutionDir)plugins $(PublishDir)&#xA;) &#xD;&#xA;xcopy /s /e /i /y $(SolutionDir)plugins $(TargetDir) " />
+    <Exec Command="set targetDic=$(PublishDir)&#xD;&#xA;&#xA;if %25targetDic%25==$(OutDir)publish\ (&#xD;&#xA;&#xA;xcopy /s /e /i /y $(SolutionDir)Galaxy.Venus.Resource $(TargetDir) &#xD;&#xA;&#xA;) else (&#xA;&#xD;&#xA;xcopy /s /e /i /y $(SolutionDir)Galaxy.Venus.Resource $(PublishDir)&#xD;&#xA;&#xA;)" />
   </Target>
 
 </Project>

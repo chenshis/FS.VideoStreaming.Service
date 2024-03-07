@@ -90,10 +90,7 @@ namespace FS.VideoStreaming.Application.AppService
             return new CameraConfigDto();
         }
 
-
-        #region 私有方法
-
-        private bool IsValidRtspAddress(List<string> addresses)
+        public bool IsValidRtspAddress(List<string> addresses)
         {
             Regex regex = new Regex(@"^rtsp:\/\/.+", RegexOptions.IgnoreCase);
             foreach (string address in addresses)
@@ -105,7 +102,5 @@ namespace FS.VideoStreaming.Application.AppService
             }
             return true;
         }
-
-        #endregion
     }
 }

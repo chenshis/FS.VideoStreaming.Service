@@ -7,23 +7,11 @@ namespace FS.VideoStreaming.WindowsService.BackgroundServices
 {
     public class VideoStreamingBackgroundService : CssBackgroundService
     {
-        private readonly IConfiguration _configuration;
-
         private static string BasePath;
 
-        public VideoStreamingBackgroundService(IServiceProvider serviceProvider, IConfiguration configuration) : base(serviceProvider)
+        public VideoStreamingBackgroundService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            using var scope = serviceProvider.CreateScope();
-            _configuration = configuration;
             Schedule = "*/10 * * * * *";
-            BasePath = _configuration["FileM3U8path:Path"];
-
-            if (BasePath != null)
-            {
-                KillAllProcess();
-                InitVideoInfo(scope.ServiceProvider);
-                PullFlowStart();
-            }
         }
 
         protected override string Schedule { get; set; }
@@ -31,48 +19,54 @@ namespace FS.VideoStreaming.WindowsService.BackgroundServices
         protected override Task Process(IServiceProvider serviceProvider)
         {
             Logger.LogInformation($"当前流媒体守护服务轮询时间：{DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-            Process[] processArr =System.Diagnostics.Process.GetProcessesByName("ffmpeg");
-            List<int> pIdList = (processArr != null && processArr.Length > 0) ? processArr.Select(m => m.Id).ToList() : new List<int>();
+            //Process[] processArr =System.Diagnostics.Process.GetProcessesByName("ffmpeg");
+            //List<int> pIdList = (processArr != null && processArr.Length > 0) ? processArr.Select(m => m.Id).ToList() : new List<int>();
 
-            for (int i = 0; i < CamerConfigData.CamerasList.Count; i++)
-            {
-                bool isRestart = true;
-                if (pIdList.Contains(CamerConfigData.CamerasList[i].ProcessId) && CamerConfigData.CamerasList[i].ProcessId > 0)
-                {
-                    string tsFilePath = CamerConfigData.CamerasList[i].PlayUrl;
-                    if (File.Exists(tsFilePath))
-                    {
-                        FileInfo fi = new FileInfo(tsFilePath);
-                        if ((DateTime.Now - fi.LastWriteTime).TotalSeconds < 100)//文件未过期 一直在拉流
-                        {
-                            isRestart = false;
-                        }
-                    }
-                    else
-                    {
-                        //覆盖文件时，会存在 JudgeFileName 刚好不存在的情况(ffmpeg会先删除文件然后再生成，所以必须要保证第一次开启所有的摄像头都能生成m3u8文件)
-                        isRestart = false;
-                    }
-                }
-                //重启进程
-                if (isRestart)
-                {
-                    if (CamerConfigData.CamerasList[i].ProcessId != 0)
-                    {
-                        if (pIdList.Contains(CamerConfigData.CamerasList[i].ProcessId))
-                        {
-                            processArr.FirstOrDefault(p => p.Id == CamerConfigData.CamerasList[i].ProcessId)?.Kill();
-                        }
+            //for (int i = 0; i < CamerConfigData.CamerasList.Count; i++)
+            //{
+            //    bool isRestart = true;
+            //    if (pIdList.Contains(CamerConfigData.CamerasList[i].ProcessId) && CamerConfigData.CamerasList[i].ProcessId > 0)
+            //    {
+            //        string tsFilePath = CamerConfigData.CamerasList[i].PlayUrl;
+            //        if (File.Exists(tsFilePath))
+            //        {
+            //            FileInfo fi = new FileInfo(tsFilePath);
+            //            if ((DateTime.Now - fi.LastWriteTime).TotalSeconds < 100)//文件未过期 一直在拉流
+            //            {
+            //                isRestart = false;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            //覆盖文件时，会存在 JudgeFileName 刚好不存在的情况(ffmpeg会先删除文件然后再生成，所以必须要保证第一次开启所有的摄像头都能生成m3u8文件)
+            //            isRestart = false;
+            //        }
+            //    }
+            //    //重启进程
+            //    if (isRestart)
+            //    {
+            //        if (CamerConfigData.CamerasList[i].ProcessId != 0)
+            //        {
+            //            if (pIdList.Contains(CamerConfigData.CamerasList[i].ProcessId))
+            //            {
+            //                processArr.FirstOrDefault(p => p.Id == CamerConfigData.CamerasList[i].ProcessId)?.Kill();
+            //            }
 
-                        Logger.LogInformation($"杀掉进程：{DateTime.Now:yyyy-MM-dd HH:mm:ss}-{CamerConfigData.CamerasList[i]}");
-                        CamerConfigData.CamerasList[i].ProcessId = 0;
-                        string M3u8FileName = CamerConfigData.CamerasList[i].PlayUrl;
-                        CamerConfigData.CamerasList[i].ProcessId = PullFlowService(CamerConfigData.CamerasList[i]); //重启推流
-                        Logger.LogInformation($"起进程：{DateTime.Now:yyyy-MM-dd HH:mm:ss}-{CamerConfigData.CamerasList[i].ProcessId}");
+            //            Logger.LogInformation($"杀掉进程：{DateTime.Now:yyyy-MM-dd HH:mm:ss}-{CamerConfigData.CamerasList[i]}");
+            //            CamerConfigData.CamerasList[i].ProcessId = 0;
+            //            string M3u8FileName = CamerConfigData.CamerasList[i].PlayUrl;
+            //            CamerConfigData.CamerasList[i].ProcessId = PullFlowService(CamerConfigData.CamerasList[i]); //重启推流
+            //            Logger.LogInformation($"起进程：{DateTime.Now:yyyy-MM-dd HH:mm:ss}-{CamerConfigData.CamerasList[i].ProcessId}");
 
-                    }
-                }
-            }
+            //        }
+            //    }
+            //}
+
+
+
+
+
+
             return Task.CompletedTask;
         }
 
