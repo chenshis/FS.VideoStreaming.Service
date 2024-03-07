@@ -58,6 +58,17 @@ namespace FS.VideoStreaming.Application.AppService
             if (dicCache != null)
             {
                 var cameraConfigDto = _cameraConfigAppService.GetCameraConfigs();
+                // 检测缓存中的摄像头是否在文件中都存在
+                foreach (var item in dicCache.Values)
+                {
+                    var result = cameraConfigDto?.RtspAddresses?.FirstOrDefault(t => t.Name == item.Name && t.Url == item.Url);
+                    if (result == null)
+                    {
+                        deleteConfigBaseDtos.Add(item);
+                        flag = true;
+                    }
+                }
+
                 if (cameraConfigDto == null || cameraConfigDto.RtspAddresses == null || cameraConfigDto.RtspAddresses.Count <= 0)
                 {
                     _logger.LogWarning($"检测当时摄像头配置文件数据不存在！");
@@ -65,17 +76,6 @@ namespace FS.VideoStreaming.Application.AppService
                 }
                 else
                 {
-                    // 检测缓存中的摄像头是否在文件中都存在
-                    foreach (var item in dicCache.Values)
-                    {
-                        var result = cameraConfigDto.RtspAddresses.FirstOrDefault(t => t.Name == item.Name && t.Url == item.Url);
-                        if (result == null)
-                        {
-                            deleteConfigBaseDtos.Add(item);
-                            flag = true;
-                        }
-                    }
-
                     foreach (var item in cameraConfigDto.RtspAddresses)
                     {
                         var result = dicCache.Values.FirstOrDefault(t => t.Name == item.Name && t.Url == item.Url);
