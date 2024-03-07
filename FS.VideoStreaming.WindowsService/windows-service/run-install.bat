@@ -6,3 +6,4 @@ set exePath=%batPath:windows-service\=%
 sc create %serviceDisplayName% binPath= "%exePath%%serviceName%%servicArgs%" start= auto
 sc description %serviceDisplayName% "|nickname|remark"
 sc start %serviceDisplayName%
+pause

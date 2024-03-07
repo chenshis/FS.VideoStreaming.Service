@@ -32,7 +32,7 @@ namespace FS.VideoStreaming.Application.AppService
             var ffmpegs = Process.GetProcessesByName(SystemConstant.FfmpegProcessName);
             if (ffmpegs == null || ffmpegs.Count() <= 0)
             {
-                _logger.LogWarning($"Process {pid}不存在！");
+                _logger.LogInformation($"Process {pid}不存在！");
                 return true;
             }
             foreach (Process process in ffmpegs)
@@ -42,7 +42,7 @@ namespace FS.VideoStreaming.Application.AppService
                     return true;
                 }
             }
-            _logger.LogWarning($"Process {pid}不存在！");
+            _logger.LogInformation($"Process {pid}不存在！");
             return false;
         }
 
@@ -69,12 +69,7 @@ namespace FS.VideoStreaming.Application.AppService
                     }
                 }
 
-                if (cameraConfigDto == null || cameraConfigDto.RtspAddresses == null || cameraConfigDto.RtspAddresses.Count <= 0)
-                {
-                    _logger.LogWarning($"检测当时摄像头配置文件数据不存在！");
-                    flag = false;
-                }
-                else
+                if (cameraConfigDto != null && cameraConfigDto.RtspAddresses != null && cameraConfigDto.RtspAddresses.Count > 0)
                 {
                     foreach (var item in cameraConfigDto.RtspAddresses)
                     {
@@ -89,7 +84,7 @@ namespace FS.VideoStreaming.Application.AppService
             }
             else
             {
-                _logger.LogWarning($"检测当时摄像头缓存不存在！");
+                _logger.LogInformation($"检测当时摄像头缓存不存在！");   
             }
             return flag;
         }
@@ -133,7 +128,7 @@ namespace FS.VideoStreaming.Application.AppService
                 var dicCache = _memoryCache.Get<Dictionary<int, CameraConfigBaseDto>>(SystemConstant.CameraCacheKey);
                 if (dicCache == null)
                 {
-                    _logger.LogWarning($"摄像头缓存信息删除失败!不存在进程：{pid}；摄像头信息：address:{dto.Url}；名称：{dto.Name}");
+                    _logger.LogInformation($"摄像头缓存信息删除失败!不存在进程：{pid}；摄像头信息：address:{dto.Url}；名称：{dto.Name}");
                     return false;
                 }
                 if (dicCache.TryGetValue(pid, out _))
@@ -143,7 +138,7 @@ namespace FS.VideoStreaming.Application.AppService
                 }
                 else
                 {
-                    _logger.LogWarning($"摄像头缓存信息删除失败!不存在进程：{pid}；摄像头信息：address:{dto.Url}；名称：{dto.Name}");
+                    _logger.LogInformation($"摄像头缓存信息删除失败!不存在进程：{pid}；摄像头信息：address:{dto.Url}；名称：{dto.Name}");
                     return false;
                 }
             }
@@ -235,7 +230,7 @@ namespace FS.VideoStreaming.Application.AppService
                 var configDto = _cameraConfigAppService.GetCameraConfigs();
                 if (configDto == null || configDto.RtspAddresses == null || configDto.RtspAddresses.Count <= 0)
                 {
-                    _logger.LogWarning($"摄像头配置信息不存在；请配置摄像头rtsp协议及摄像头名称！");
+                    _logger.LogInformation($"摄像头配置信息不存在；请配置摄像头rtsp协议及摄像头名称！");
                     return;
                 }
                 // 检测摄像头地址是否合法
