@@ -22,8 +22,10 @@ namespace FS.VideoStreaming.Application.IAppService
         /// <summary>
         /// 检测摄像头数据信息是否变更
         /// </summary>
+        /// <param name="addConfigBaseDtos">新增摄像头信息</param>
+        /// <param name="deleteConfigBaseDtos">移除摄像头信息</param>
         /// <returns></returns>
-        bool IsValidate();
+        bool IsValidate(out List<CameraConfigBaseDto> addConfigBaseDtos, out List<CameraConfigBaseDto> deleteConfigBaseDtos);
 
         /// <summary>
         /// 启动摄像头拉流

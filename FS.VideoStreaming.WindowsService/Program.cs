@@ -43,6 +43,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 //}
 app.UseFfmpeg();
+app.UseServiceStop();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -46,8 +46,14 @@ namespace FS.VideoStreaming.Application.AppService
             return false;
         }
 
-        public bool IsValidate()
+        public bool IsValidate(out List<CameraConfigBaseDto> addConfigBaseDtos, out List<CameraConfigBaseDto> deleteConfigBaseDtos)
         {
+            var flag = false;
+            // 添加的项
+            addConfigBaseDtos = new List<CameraConfigBaseDto>();
+            // 移除的项
+            deleteConfigBaseDtos = new List<CameraConfigBaseDto>();
+            // 缓存字典
             var dicCache = _memoryCache.Get<Dictionary<int, CameraConfigBaseDto>>(SystemConstant.CameraCacheKey);
             if (dicCache != null)
             {
@@ -55,33 +61,37 @@ namespace FS.VideoStreaming.Application.AppService
                 if (cameraConfigDto == null || cameraConfigDto.RtspAddresses == null || cameraConfigDto.RtspAddresses.Count <= 0)
                 {
                     _logger.LogWarning($"检测当时摄像头配置文件数据不存在！");
-                    return true;
+                    flag = false;
                 }
-                // 检测缓存中的摄像头是否在文件中都存在
-                foreach (var item in dicCache.Values)
+                else
                 {
-                    var result = cameraConfigDto.RtspAddresses.FirstOrDefault(t => t.Name == item.Name && t.Url == item.Url);
-                    if (result == null)
+                    // 检测缓存中的摄像头是否在文件中都存在
+                    foreach (var item in dicCache.Values)
                     {
-                        return false;
+                        var result = cameraConfigDto.RtspAddresses.FirstOrDefault(t => t.Name == item.Name && t.Url == item.Url);
+                        if (result == null)
+                        {
+                            deleteConfigBaseDtos.Add(item);
+                            flag = true;
+                        }
                     }
-                }
 
-                foreach (var item in cameraConfigDto.RtspAddresses)
-                {
-                    var result = dicCache.Values.FirstOrDefault(t => t.Name == item.Name && t.Url == item.Url);
-                    if (result == null)
+                    foreach (var item in cameraConfigDto.RtspAddresses)
                     {
-                        return false;
+                        var result = dicCache.Values.FirstOrDefault(t => t.Name == item.Name && t.Url == item.Url);
+                        if (result == null)
+                        {
+                            addConfigBaseDtos.Add(item);
+                            flag = true;
+                        }
                     }
                 }
-                return true;
             }
             else
             {
                 _logger.LogWarning($"检测当时摄像头缓存不存在！");
-                return true;
             }
+            return flag;
         }
 
         public void KillProcess(int pid = -1)
@@ -89,13 +99,24 @@ namespace FS.VideoStreaming.Application.AppService
             var processes = Process.GetProcessesByName(SystemConstant.FfmpegProcessName);
             if (processes != null && processes.Count() > 0)
             {
-                foreach (var process in processes)
+                if (pid > 0)
                 {
-                    process.Kill();
-                    _logger.LogInformation($"ffmpeg进程：{process.Id}被杀掉！");
-                    if (process.Id == pid)
+                    foreach (var process in processes)
                     {
-                        return;
+                        if (process.Id == pid)
+                        {
+                            process.Kill();
+                            _logger.LogInformation($"ffmpeg删除指定进程：{process.Id}被杀掉！");
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var process in processes)
+                    {
+                        process.Kill();
+                        _logger.LogInformation($"ffmpeg删除所有进程：{process.Id}被杀掉！");
                     }
                 }
             }
@@ -176,6 +197,7 @@ namespace FS.VideoStreaming.Application.AppService
                 process = Process.Start(startInfo);
                 process.ErrorDataReceived += ErrorDataReceived;
                 Processid = process?.Id ?? Processid;//进出ID
+                item.ProcessId = Processid;
                 _logger.LogInformation($"ffmpeg进程启动成功；进程ID：{Processid}，摄像头名称：{item.Name}；摄像头地址：{item.Url}");
             }
             catch (Exception ex)
