@@ -66,6 +66,12 @@ namespace FS.VideoStreaming.Application.AppService
                     {
                         deleteConfigBaseDtos.Add(item);
                         flag = true;
+                        continue;
+                    }
+                    if (!IsProcessRunning(item.ProcessId))
+                    {
+                        deleteConfigBaseDtos.Add(item);
+                        flag = true;
                     }
                 }
 
@@ -84,7 +90,7 @@ namespace FS.VideoStreaming.Application.AppService
             }
             else
             {
-                _logger.LogInformation($"检测当时摄像头缓存不存在！");   
+                _logger.LogInformation($"检测当时摄像头缓存不存在！");
             }
             return flag;
         }
