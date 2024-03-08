@@ -30,6 +30,9 @@
     <None Update="lib\ffmpeg.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="lib\uninstall.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="windows-service\run-install.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
