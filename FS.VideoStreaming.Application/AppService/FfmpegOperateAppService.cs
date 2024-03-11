@@ -32,7 +32,7 @@ namespace FS.VideoStreaming.Application.AppService
             var ffmpegs = Process.GetProcessesByName(SystemConstant.FfmpegProcessName);
             if (ffmpegs == null || ffmpegs.Count() <= 0)
             {
-                _logger.LogInformation($"Process {pid}不存在！");
+                _logger.LogInformation($"检测已经启动的进程{pid}未存活！");
                 return true;
             }
             foreach (Process process in ffmpegs)
@@ -42,7 +42,7 @@ namespace FS.VideoStreaming.Application.AppService
                     return true;
                 }
             }
-            _logger.LogInformation($"Process {pid}不存在！");
+            _logger.LogInformation($"Process {pid}不在进程列表中！");
             return false;
         }
 
@@ -123,7 +123,7 @@ namespace FS.VideoStreaming.Application.AppService
             }
             else
             {
-                _logger.LogInformation($"检测当前ffmpeg进程不存在！");
+                _logger.LogInformation($"没有需要查杀的ffmpeg进程！");
             }
         }
 
@@ -180,6 +180,7 @@ namespace FS.VideoStreaming.Application.AppService
             {
                 Directory.CreateDirectory(generatePath);
             }
+            //_logger.LogInformation($"ffmpeg进程启动成功；进程ID：{Processid}，摄像头名称：{item.Name}；摄像头地址：{item.Url}");
 
             Process process = null;
             int Processid = 0;
