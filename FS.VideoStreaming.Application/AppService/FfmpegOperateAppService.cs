@@ -33,7 +33,7 @@ namespace FS.VideoStreaming.Application.AppService
             if (ffmpegs == null || ffmpegs.Count() <= 0)
             {
                 _logger.LogInformation($"检测已经启动的进程{pid}未存活！");
-                return true;
+                return false;
             }
             foreach (Process process in ffmpegs)
             {
@@ -189,7 +189,7 @@ namespace FS.VideoStreaming.Application.AppService
                 var startInfo = new ProcessStartInfo();
                 startInfo.FileName = "lib\\ffmpeg.exe";
 
-                startInfo.Arguments = " -f rtsp -rtsp_transport tcp -i " + RtspPath + " -fflags flush_packets -max_delay 1 -an -flags -global_header -hls_time 10 -hls_list_size 10 -hls_flags 10 -vcodec copy -s 216x384 -b 1024k -y  ";
+                startInfo.Arguments = " -f rtsp -rtsp_transport tcp -i " + RtspPath + " -fflags flush_packets -max_delay 1 -flags -global_header -hls_time 10 -hls_list_size 10 -hls_flags 10 -c:v libx264 -c:a aac -b 1024k -y  ";
                 startInfo.Arguments += (generatePath + "\\" + M3u8FileName);
 
                 startInfo.CreateNoWindow = true;
