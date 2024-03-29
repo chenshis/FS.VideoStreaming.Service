@@ -24,6 +24,7 @@ namespace FS.VideoStreaming.WindowsService.BackgroundServices
             {
                 return Task.CompletedTask;
             }
+
             // 新增进程
             if (addConfigs.Count > 0)
             {

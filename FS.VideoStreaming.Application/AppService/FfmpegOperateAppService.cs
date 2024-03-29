@@ -46,6 +46,36 @@ namespace FS.VideoStreaming.Application.AppService
             return false;
         }
 
+        public bool IsDirectoryFilesExists(CameraConfigBaseDto item)
+        {
+            var generatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SystemConstant.Nginx, SystemConstant.Html, item.Name);
+            if (Directory.Exists(generatePath))
+            {
+                string[] files = Directory.GetFiles(generatePath);
+                if (files.Length <= 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    foreach (string file in files) 
+                    {
+                        var lastWriteTime=File.GetLastWriteTime(file);
+
+                        // 计算时间差
+                        TimeSpan timeDifference = DateTime.Now - lastWriteTime;
+
+                        if (timeDifference.TotalMinutes > 5)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+
         public bool IsValidate(out List<CameraConfigBaseDto> addConfigBaseDtos, out List<CameraConfigBaseDto> deleteConfigBaseDtos)
         {
             var flag = false;
@@ -69,6 +99,12 @@ namespace FS.VideoStreaming.Application.AppService
                         continue;
                     }
                     if (!IsProcessRunning(item.ProcessId))
+                    {
+                        deleteConfigBaseDtos.Add(item);
+                        flag = true;
+                    }
+
+                    if (!IsDirectoryFilesExists(item))
                     {
                         deleteConfigBaseDtos.Add(item);
                         flag = true;
@@ -211,7 +247,9 @@ namespace FS.VideoStreaming.Application.AppService
                 var startInfo = new ProcessStartInfo();
                 startInfo.FileName = "lib\\ffmpeg.exe";
 
-                startInfo.Arguments = " -f rtsp -rtsp_transport tcp -i " + RtspPath + " -fflags flush_packets -max_delay 1 -flags -global_header -hls_time 10 -hls_list_size 10 -hls_flags 10 -c:v libx264 -c:a aac -b 1024k -y  ";
+                //startInfo.Arguments = " -f rtsp -rtsp_transport tcp -i " + RtspPath + " -fflags flush_packets -max_delay 1 -flags -global_header -hls_time 10 -hls_list_size 10 -hls_flags 10 -c:v libx264 -c:a aac -b 1024k -y  ";
+
+                startInfo.Arguments = " -f rtsp -rtsp_transport tcp -i " + RtspPath + " -fflags flush_packets -max_delay 1 -flags -global_header -hls_time 30 -hls_list_size 10 -hls_flags 10 -c:v libx264 -c:a aac -b:v 1024k -y  ";
                 startInfo.Arguments += (generatePath + "\\" + M3u8FileName);
 
                 startInfo.CreateNoWindow = true;
