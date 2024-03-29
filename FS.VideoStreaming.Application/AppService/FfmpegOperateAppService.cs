@@ -140,6 +140,28 @@ namespace FS.VideoStreaming.Application.AppService
                 if (dicCache.TryGetValue(pid, out _))
                 {
                     dicCache.Remove(pid);
+                    try
+                    {
+                        var generatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SystemConstant.Nginx, SystemConstant.Html, dto.Name);
+                        if (Directory.Exists(generatePath))
+                        {
+                            DirectoryInfo directoryInfo = new DirectoryInfo(generatePath);
+                            var files = directoryInfo.EnumerateFiles();
+                            if (files != null && files.Count() > 0)
+                            {
+                                foreach (var item in files)
+                                {
+                                    item.Delete();
+                                    _logger.LogInformation($"删除指定文件：{item.Name}");
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"删除文件异常：{ex.Message}");
+                    }
+
                     return true;
                 }
                 else
