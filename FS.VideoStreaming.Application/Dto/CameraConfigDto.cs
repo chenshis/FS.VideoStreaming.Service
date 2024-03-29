@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 
 namespace FS.VideoStreaming.Application.Dto
@@ -39,5 +40,10 @@ namespace FS.VideoStreaming.Application.Dto
         /// 描述
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateDate { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace FS.VideoStreaming.WindowsService.BackgroundServices
     {
         public VideoStreamingBackgroundService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            Schedule = "*/30 * * * * *";
+            Schedule = "0 0/1 * * * *";
         }
 
         protected override string Schedule { get; set; }

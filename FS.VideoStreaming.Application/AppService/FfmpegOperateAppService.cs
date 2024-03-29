@@ -52,27 +52,38 @@ namespace FS.VideoStreaming.Application.AppService
             if (Directory.Exists(generatePath))
             {
                 string[] files = Directory.GetFiles(generatePath);
-                if (files.Length <= 0)
+                // 预留五分钟左右时间 用于ffmpeg 程序内部处理耗时
+                // 影响文件读写进度
+                if (item.CreateDate.AddMinutes(5) < DateTime.Now)
                 {
-                    return false;
-                }
-                else
-                {
-                    foreach (string file in files) 
+                    // 检测是否存在缓存文件
+                    if (files.Length <= 0)
                     {
-                        var lastWriteTime=File.GetLastWriteTime(file);
-
-                        // 计算时间差
-                        TimeSpan timeDifference = DateTime.Now - lastWriteTime;
-
-                        if (timeDifference.TotalMinutes > 5)
+                        _logger.LogError($"缓存中存在执行的进程，但是没有写入缓存文件；地址：{generatePath}");
+                        return false;
+                    }
+                    else
+                    {
+                        // 遍历文件 检查是否存在长时间不更新的文件
+                        foreach (string file in files)
                         {
-                            return false;
+                            var lastWriteTime = File.GetLastWriteTime(file);
+                            // 计算时间差
+                            TimeSpan timeDifference = DateTime.Now - lastWriteTime;
+                            if (timeDifference.TotalMinutes < 10)
+                            {
+                                return true;
+                            }
                         }
                     }
                 }
+                else
+                {
+                    return true;
+                }
             }
-            return true;
+            _logger.LogError($"缓存文件超过30分钟不更新；地址：{generatePath}");
+            return false;
         }
 
 
@@ -163,6 +174,13 @@ namespace FS.VideoStreaming.Application.AppService
             }
         }
 
+        /// <summary>
+        /// 设置摄像头缓存
+        /// </summary>
+        /// <param name="pid"></param>
+        /// <param name="dto"></param>
+        /// <param name="isDelete">添加 or 删除</param>
+        /// <returns></returns>
         public bool SetCameraCache(int pid, CameraConfigBaseDto dto, bool isDelete)
         {
             if (isDelete)
@@ -208,6 +226,7 @@ namespace FS.VideoStreaming.Application.AppService
             }
             else
             {
+                dto.CreateDate = DateTime.Now;
                 var dicCache = _memoryCache.Get<Dictionary<int, CameraConfigBaseDto>>(SystemConstant.CameraCacheKey);
                 if (dicCache == null)
                 {
