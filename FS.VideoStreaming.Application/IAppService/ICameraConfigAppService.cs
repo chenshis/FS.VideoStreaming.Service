@@ -29,5 +29,12 @@ namespace FS.VideoStreaming.Application.IAppService
         /// <param name="addresses">地址校验</param>
         /// <returns></returns>
         bool IsValidRtspAddress(List<string> addresses);
+
+        /// <summary>
+        /// 根据rtsp协议移除配置
+        /// </summary>
+        /// <param name="rtspUrl"></param>
+        /// <returns></returns>
+        bool DeleteRtspAddress(string rtspUrl);
     }
 }

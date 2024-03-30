@@ -23,7 +23,7 @@ namespace FS.VideoStreaming.WindowsService.Controllers
         /// 获取所有摄像头
         /// </summary>
         /// <returns></returns>
-        [HttpGet(Name = "GetCameraConfigs")]
+        [HttpGet(Name = "cameraconfigs")]
         public CameraConfigDto Get()
         {
             var cameraConfigs = _cameraConfigAppService.GetCameraConfigs();
@@ -36,12 +36,29 @@ namespace FS.VideoStreaming.WindowsService.Controllers
         /// </summary>
         /// <param name="cameraConfigs"></param>
         /// <returns></returns>
-        [HttpPost(Name = "CameraConfigs")]
+        [HttpPost(Name = "cameraconfigs")]
         public bool Save([FromBody] CameraConfigDto cameraConfigs)
         {
             _logger.LogInformation($"调用接口保存摄像头配置信息：{JsonConvert.SerializeObject(cameraConfigs)}");
             var result = _cameraConfigAppService.Save(cameraConfigs);
             return result;
+        }
+
+        /// <summary>
+        /// 删除摄像头配置（可能不会立刻移除进程，需要等待下次轮询服务时移除进程 最多间隔一分钟左右）
+        /// </summary>
+        /// <param name="cameraConfig">摄像头对象</param>
+        /// <returns></returns>
+        [HttpPost("deleteconfig")]
+        public bool Delete([FromBody] CameraConfigDeleteDto cameraConfig)
+        {
+            if (cameraConfig == null || string.IsNullOrWhiteSpace(cameraConfig.RtspUrl))
+            {
+                _logger.LogInformation($"移除摄像头失败摄像头地址不能为空");
+                return false;
+            }
+            _logger.LogInformation($"调用接口移除摄像头地址：{cameraConfig.RtspUrl}");
+            return _cameraConfigAppService.DeleteRtspAddress(cameraConfig.RtspUrl);
         }
     }
 }

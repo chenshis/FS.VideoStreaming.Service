@@ -2,6 +2,7 @@
 using FS.VideoStreaming.Application.IAppService;
 using FS.VideoStreaming.Infrastructure.Config;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NLog;
 using System;
@@ -14,17 +15,25 @@ using System.Text;
 
 namespace FS.VideoStreaming.Application.AppService
 {
+    /// <summary>
+    /// Ffmpeg工具操作类
+    /// </summary>
     public class FfmpegOperateAppService : IFfmpegOperateAppService
     {
         private readonly ILogger<FfmpegOperateAppService> _logger;
         private readonly IMemoryCache _memoryCache;
         private readonly ICameraConfigAppService _cameraConfigAppService;
+        private readonly IConfiguration _configuration;
 
-        public FfmpegOperateAppService(ILogger<FfmpegOperateAppService> logger, IMemoryCache memoryCache, ICameraConfigAppService cameraConfigAppService)
+        public FfmpegOperateAppService(ILogger<FfmpegOperateAppService> logger,
+                                       IMemoryCache memoryCache,
+                                       ICameraConfigAppService cameraConfigAppService,
+                                       IConfiguration configuration)
         {
             _logger = logger;
             _memoryCache = memoryCache;
             _cameraConfigAppService = cameraConfigAppService;
+            _configuration = configuration;
         }
 
         public bool IsProcessRunning(int pid)
@@ -43,46 +52,6 @@ namespace FS.VideoStreaming.Application.AppService
                 }
             }
             _logger.LogInformation($"Process {pid}不在进程列表中！");
-            return false;
-        }
-
-        public bool IsDirectoryFilesExists(CameraConfigBaseDto item)
-        {
-            var generatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SystemConstant.Nginx, SystemConstant.Html, item.Name);
-            if (Directory.Exists(generatePath))
-            {
-                string[] files = Directory.GetFiles(generatePath);
-                // 预留五分钟左右时间 用于ffmpeg 程序内部处理耗时
-                // 影响文件读写进度
-                if (item.CreateDate.AddMinutes(5) < DateTime.Now)
-                {
-                    // 检测是否存在缓存文件
-                    if (files.Length <= 0)
-                    {
-                        _logger.LogError($"缓存中存在执行的进程，但是没有写入缓存文件；地址：{generatePath}");
-                        return false;
-                    }
-                    else
-                    {
-                        // 遍历文件 检查是否存在长时间不更新的文件
-                        foreach (string file in files)
-                        {
-                            var lastWriteTime = File.GetLastWriteTime(file);
-                            // 计算时间差
-                            TimeSpan timeDifference = DateTime.Now - lastWriteTime;
-                            if (timeDifference.TotalMinutes < 10)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            _logger.LogError($"缓存文件超过30分钟不更新；地址：{generatePath}");
             return false;
         }
 
@@ -141,6 +110,55 @@ namespace FS.VideoStreaming.Application.AppService
             }
             return flag;
         }
+
+        private bool IsDirectoryFilesExists(CameraConfigBaseDto item)
+        {
+            var generatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, SystemConstant.Nginx, SystemConstant.Html, item.Name);
+
+            if (Directory.Exists(generatePath))
+            {
+                string[] files = Directory.GetFiles(generatePath);
+                // 预留五分钟左右时间 用于ffmpeg 程序内部处理耗时
+                // 影响文件读写进度
+                int reservedTimeMinute = 5;
+                if (int.TryParse(_configuration["ReservedTimeMinute"], out int result))
+                {
+                    reservedTimeMinute = result;
+                }
+                if (item.CreateDate.AddMinutes(reservedTimeMinute) < DateTime.Now)
+                {
+                    // 检测是否存在缓存文件
+                    if (files.Length <= 0)
+                    {
+                        _logger.LogError($"缓存中存在执行的进程，但是没有写入缓存文件；地址：{generatePath}");
+                        return false;
+                    }
+                    else
+                    {
+                        // 遍历文件 检查是否存在长时间不更新的文件
+                        foreach (string file in files)
+                        {
+                            var lastWriteTime = File.GetLastWriteTime(file);
+                            // 比较文件时间
+                            if (lastWriteTime.AddMinutes(reservedTimeMinute) > DateTime.Now)
+                            {
+                                _logger.LogInformation($"缓存文件最后更新时间{lastWriteTime}在合理时间限制范围内；地址：{generatePath}");
+                                return true;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation($"缓存文件限定{item.CreateDate.AddMinutes(reservedTimeMinute)}内不检测文件是否丢失和是否长时间未变更；地址：{generatePath}");
+                    return true;
+                }
+                _logger.LogError($"缓存文件超过{reservedTimeMinute}分钟不更新；地址：{generatePath}");
+            }
+
+            return false;
+        }
+
 
         public void KillProcess(int pid = -1)
         {

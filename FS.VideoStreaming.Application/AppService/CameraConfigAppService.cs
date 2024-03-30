@@ -21,12 +21,14 @@ namespace FS.VideoStreaming.Application.AppService
         }
         public bool Save(CameraConfigDto cameraConfigDto)
         {
-            if (cameraConfigDto == null || cameraConfigDto.RtspAddresses?.Count <= 0)
+            if (cameraConfigDto == null)
             {
                 _logger.LogError("保存摄像头配置信息失败：地址不存在！");
                 return false;
             }
-            if (!IsValidRtspAddress(cameraConfigDto.RtspAddresses.Select(t => t.Url).ToList()))
+            if (cameraConfigDto.RtspAddresses != null
+                && cameraConfigDto.RtspAddresses.Count > 0
+                && !IsValidRtspAddress(cameraConfigDto.RtspAddresses.Select(t => t.Url).ToList()))
             {
                 _logger.LogError("存在不合法的rtsp地址！");
                 return false;
@@ -101,6 +103,14 @@ namespace FS.VideoStreaming.Application.AppService
                 }
             }
             return true;
+        }
+
+        public bool DeleteRtspAddress(string rtspUrl)
+        {
+            var configs = GetCameraConfigs();
+            var rtspAddresses = configs.RtspAddresses.Where(t => t.Url != rtspUrl).ToList();
+            configs.RtspAddresses = rtspAddresses;
+            return Save(configs);
         }
     }
 }
